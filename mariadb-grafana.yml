@@ -98,18 +98,17 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pvc-mariadb-data
+  name: pvc-mariadb-grafana
   annotations:
     {}
     #  key: string
   labels:
     appx: grafana
+    type: database
     name: pvc-grafana-db
     #  key: string
 #  namespace: envi-production
 spec:
-  selector:
-    matchLabels:#  key: string
 #    matchExpressions:
 #      - key: string
 #        operator: string
