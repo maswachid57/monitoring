@@ -70,7 +70,7 @@ spec:
           persistentVolumeClaim:
             claimName: pvc-grafana-data
 
-         - configMap:
+        - configMap:
             defaultMode: 420
             name: cm-grafana
             optional: false
