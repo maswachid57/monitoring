@@ -1,1 +1,166 @@
+## Deployment
 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb-deployment
+  labels:
+    apps: grafana
+    app: mariadb-grafana
+    name: mariadb
+    type: database
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: mariadb-grafana
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mariadb-grafana
+        app.kubernetes.io/instance: mariadb-grafana
+        app.kubernetes.io/name: mariadb-grafana
+#      namespace: monitoring
+    spec:
+      containers:
+        - env:
+            - name: MARIADB_ALLOW_EMPTY_ROOT_PASSWORD
+              value: '0'
+            - name: MARIADB_ROOT_PASSWORD
+              value: mysecret
+            - name: MARIADB_USER
+              value: myuser
+            - name: MARIADB_PASSWORD
+              value: mypassword
+            - name: MARIADB_DATABASE
+              value: grafana
+          image: mariadb:jammy
+          imagePullPolicy: IfNotPresent
+          name: mariadb-grafana
+          ports:
+            - containerPort: 3306
+              name: mysql
+              protocol: TCP
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {}
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 999
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: vol-zzihv
+      dnsPolicy: ClusterFirst
+      initContainers:
+        - command:
+            - chown
+            - '-R'
+            - '999:999'
+            - /var/lib/mysql
+          image: busybox
+          imagePullPolicy: Always
+          name: busybox
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: vol-zzihv
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 999
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: vol-zzihv
+          persistentVolumeClaim:
+            claimName: pvc-mariadb-grafana
+
+
+## Persistence Storage Claim
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-mariadb-data
+  annotations:
+    {}
+    #  key: string
+  labels:
+    appx: grafana
+    name: pvc-grafana-db
+    #  key: string
+#  namespace: envi-production
+spec:
+  selector:
+    matchLabels:#  key: string
+#    matchExpressions:
+#      - key: string
+#        operator: string
+#        values:
+#          - string
+  accessModes:
+    - ReadWriteOnce
+#    - string
+  resources:
+    requests:
+      storage: 1Gi
+      #  key: string
+#    claims:
+#      - name: string
+#    limits:  key: string
+#  storageClassName: Use the default class
+  volumeName: ''
+#  dataSource:
+#    apiGroup: string
+#    kind: string
+#    name: string
+#  dataSourceRef:
+#    apiGroup: string
+#    kind: string
+#    name: string
+#    namespace: string
+#  volumeMode: string
+__clone: true
+
+## Service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    field.cattle.io/description: ci-mariadb-grafana
+  name: ci-mariadb-grafana
+#  namespace: monitoring
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: mysql
+      port: 3306
+      protocol: TCP
+      targetPort: 3306
+  selector:
+    app: mariadb-grafana
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
