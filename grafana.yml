@@ -49,6 +49,7 @@ spec:
             successThreshold: 1
             timeoutSeconds: 1
           securityContext:
+            fsGroup: 65535
             allowPrivilegeEscalation: true
             privileged: false
             readOnlyRootFilesystem: false
