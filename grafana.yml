@@ -60,7 +60,7 @@ spec:
             - mountPath: /var/lib/grafana
               name: vol-grafana-data
             - mountPath: /etc/grafana/grafana.ini
-              name: vol-9iyqp
+              name: vol-config-grafana-ini
               subPath: grafana.ini
           _init: false
           __active: true
@@ -69,6 +69,14 @@ spec:
         - name: vol-grafana-data
           persistentVolumeClaim:
             claimName: pvc-grafana-data
+
+         - configMap:
+            defaultMode: 420
+            name: cm-grafana
+            optional: false
+          name: vol-config-grafana-ini
+
+
   progressDeadlineSeconds: 600
   replicas: 1
   revisionHistoryLimit: 10
