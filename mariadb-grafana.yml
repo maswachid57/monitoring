@@ -145,7 +145,7 @@ kind: Service
 metadata:
   annotations:
     field.cattle.io/description: ci-mariadb-grafana
-  name: ci-mariadb-grafana
+  name: svc-mariadb-grafana
 #  namespace: monitoring
 spec:
   internalTrafficPolicy: Cluster
