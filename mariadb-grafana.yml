@@ -158,7 +158,7 @@ spec:
       protocol: TCP
       targetPort: 3306
   selector:
-    app: mariadb-grafana
+    app.kubernetes.io/instance: grafana-mariadb
   sessionAffinity: None
   type: ClusterIP
 status:
