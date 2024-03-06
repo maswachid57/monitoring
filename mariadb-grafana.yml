@@ -92,51 +92,6 @@ spec:
             claimName: pvc-grafana-mariadb-data
 
 
-## Persistence Storage Claim
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-grafana-mariadb-data
-  annotations:
-    {}
-    #  key: string
-  labels:
-    appx: grafana
-    type: database
-    name: pvc-grafana-db
-    #  key: string
-#  namespace: envi-production
-spec:
-#    matchExpressions:
-#      - key: string
-#        operator: string
-#        values:
-#          - string
-  accessModes:
-    - ReadWriteOnce
-#    - string
-  resources:
-    requests:
-      storage: 1Gi
-      #  key: string
-#    claims:
-#      - name: string
-#    limits:  key: string
-#  storageClassName: Use the default class
-  volumeName: ''
-#  dataSource:
-#    apiGroup: string
-#    kind: string
-#    name: string
-#  dataSourceRef:
-#    apiGroup: string
-#    kind: string
-#    name: string
-#    namespace: string
-#  volumeMode: string
-__clone: true
 
 ## Service
 ---
